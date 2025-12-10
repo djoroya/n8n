@@ -1,72 +1,109 @@
-![Banner image](https://user-images.githubusercontent.com/10284570/173569848-c624317f-42b1-45a6-ab09-f0ea3c247648.png)
+# n8n Deployment
 
-# n8n - Secure Workflow Automation for Technical Teams
+Este repositorio contiene la configuración para desplegar n8n usando Docker y Coolify.
 
-n8n is a workflow automation platform that gives technical teams the flexibility of code with the speed of no-code. With 400+ integrations, native AI capabilities, and a fair-code license, n8n lets you build powerful automations while maintaining full control over your data and deployments.
+## 🚀 Despliegue en Coolify
 
-![n8n.io - Screenshot](https://raw.githubusercontent.com/n8n-io/n8n/master/assets/n8n-screenshot-readme.png)
+### Configuración Rápida
 
-## Key Capabilities
+1. **Conecta el repositorio** en Coolify
+2. **Configura las variables de entorno** necesarias
+3. **Despliega** automáticamente
 
-- **Code When You Need It**: Write JavaScript/Python, add npm packages, or use the visual interface
-- **AI-Native Platform**: Build AI agent workflows based on LangChain with your own data and models
-- **Full Control**: Self-host with our fair-code license or use our [cloud offering](https://app.n8n.cloud/login)
-- **Enterprise-Ready**: Advanced permissions, SSO, and air-gapped deployments
-- **Active Community**: 400+ integrations and 900+ ready-to-use [templates](https://n8n.io/workflows)
+### Variables de Entorno Requeridas
 
-## Quick Start
+```bash
+# Requerido: Clave de encriptación (genera una con: openssl rand -base64 32)
+N8N_ENCRYPTION_KEY=tu-clave-de-encriptacion-aqui
 
-Try n8n instantly with [npx](https://docs.n8n.io/hosting/installation/npm/) (requires [Node.js](https://nodejs.org/en/)):
-
-```
-npx n8n
+# Requerido: URL de tu dominio en Coolify
+WEBHOOK_URL=https://tu-dominio.com
 ```
 
-Or deploy with [Docker](https://docs.n8n.io/hosting/installation/docker/):
+### Variables de Entorno Opcionales
 
+```bash
+# Puerto (por defecto: 5678)
+N8N_PORT=5678
+
+# Protocolo (por defecto: http, usar https en producción)
+N8N_PROTOCOL=https
+
+# Autenticación básica
+N8N_BASIC_AUTH_ACTIVE=true
+N8N_BASIC_AUTH_USER=admin
+N8N_BASIC_AUTH_PASSWORD=tu-password-seguro
 ```
-docker volume create n8n_data
-docker run -it --rm --name n8n -p 5678:5678 -v n8n_data:/home/node/.n8n docker.n8n.io/n8nio/n8n
+
+## 🐳 Despliegue Local con Docker
+
+### Opción 1: Docker Run
+
+```bash
+docker build -t n8n-custom .
+docker run -d \
+  --name n8n \
+  -p 5678:5678 \
+  -e N8N_ENCRYPTION_KEY="$(openssl rand -base64 32)" \
+  -e WEBHOOK_URL="http://localhost:5678" \
+  -v n8n_data:/home/node/.n8n \
+  n8n-custom
 ```
 
-Access the editor at http://localhost:5678
+### Opción 2: Docker Compose
 
-## Resources
+```bash
+# Copia el archivo de ejemplo de variables de entorno
+cp .env.example .env
 
-- 📚 [Documentation](https://docs.n8n.io)
-- 🔧 [400+ Integrations](https://n8n.io/integrations)
-- 💡 [Example Workflows](https://n8n.io/workflows)
-- 🤖 [AI & LangChain Guide](https://docs.n8n.io/advanced-ai/)
-- 👥 [Community Forum](https://community.n8n.io)
-- 📖 [Community Tutorials](https://community.n8n.io/c/tutorials/28)
+# Edita .env con tus valores
+nano .env
 
-## Support
+# Inicia los servicios
+docker-compose up -d
 
-Need help? Our community forum is the place to get support and connect with other users:
-[community.n8n.io](https://community.n8n.io)
+# Ver logs
+docker-compose logs -f
 
-## License
+# Detener
+docker-compose down
+```
 
-n8n is [fair-code](https://faircode.io) distributed under the [Sustainable Use License](https://github.com/n8n-io/n8n/blob/master/LICENSE.md) and [n8n Enterprise License](https://github.com/n8n-io/n8n/blob/master/LICENSE_EE.md).
+## 📝 Configuración en Coolify
 
-- **Source Available**: Always visible source code
-- **Self-Hostable**: Deploy anywhere
-- **Extensible**: Add your own nodes and functionality
+1. **Importar repositorio**: Conecta este repositorio de GitHub a Coolify
+2. **Tipo de aplicación**: Detectará automáticamente el Dockerfile
+3. **Puerto**: Configura el puerto 5678
+4. **Variables de entorno**: Añade las variables necesarias en el panel de Coolify
+5. **Dominio**: Configura tu dominio personalizado
+6. **SSL**: Habilita HTTPS automático con Let's Encrypt
 
-[Enterprise licenses](mailto:license@n8n.io) available for additional features and support.
+## 🔒 Seguridad
 
-Additional information about the license model can be found in the [docs](https://docs.n8n.io/sustainable-use-license/).
+- **Siempre** configura `N8N_ENCRYPTION_KEY` con un valor seguro
+- En producción, usa `N8N_PROTOCOL=https`
+- Considera habilitar autenticación básica o configurar un proxy reverso
+- Para datos sensibles, usa PostgreSQL en lugar de SQLite
 
-## Contributing
+## 📚 Documentación
 
-Found a bug 🐛 or have a feature idea ✨? Check our [Contributing Guide](https://github.com/n8n-io/n8n/blob/master/CONTRIBUTING.md) to get started.
+- [n8n Documentation](https://docs.n8n.io/)
+- [Coolify Documentation](https://coolify.io/docs)
+- [Environment Variables](https://docs.n8n.io/hosting/configuration/environment-variables/)
 
-## Join the Team
+## 🛠️ Troubleshooting
 
-Want to shape the future of automation? Check out our [job posts](https://n8n.io/careers) and join our team!
+### Ver logs en Docker
+```bash
+docker logs -f <container-id>
+```
 
-## What does n8n mean?
+### Reiniciar el contenedor
+```bash
+docker restart <container-id>
+```
 
-**Short answer:** It means "nodemation" and is pronounced as n-eight-n.
-
-**Long answer:** "I get that question quite often (more often than I expected) so I decided it is probably best to answer it here. While looking for a good name for the project with a free domain I realized very quickly that all the good ones I could think of were already taken. So, in the end, I chose nodemation. 'node-' in the sense that it uses a Node-View and that it uses Node.js and '-mation' for 'automation' which is what the project is supposed to help with. However, I did not like how long the name was and I could not imagine writing something that long every time in the CLI. That is when I then ended up on 'n8n'." - **Jan Oberhauser, Founder and CEO, n8n.io**
+### Acceder al contenedor
+```bash
+docker exec -it <container-id> /bin/sh
+```
