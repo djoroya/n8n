@@ -1,5 +1,5 @@
 # Dockerfile for n8n deployment on Coolify
-# Build from official Node.js image
+# Build from official Node.js image s
 FROM node:20-alpine
 
 # Set working directory
