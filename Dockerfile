@@ -11,5 +11,4 @@ ENV N8N_PORT=5678
 ENV N8N_PROTOCOL=http
 ENV NODE_ENV=production
 
-# Use the default entrypoint and command from the base image
-CMD ["n8n"]
+# No need to override CMD or ENTRYPOINT, use the defaults from base image
